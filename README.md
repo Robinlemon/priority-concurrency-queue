@@ -26,6 +26,54 @@ Installation is done using the
 $ npm install @robinlemon/priority-concurrency-queue
 ```
 
+## Usage
+
+Short Example:
+
+```ts
+import { AsyncQueue, IQueueItem } from '@robinlemon/priority-concurrency-queue';
+
+await(new AsyncQueue<number>(10).Add({
+    Task: async () => 30;
+    Priority: 1;
+}).Start());
+
+console.log('Tasks Complete!');
+```
+
+Long Example:
+
+```ts
+import { AsyncQueue, IQueueItem } from '@robinlemon/priority-concurrency-queue';
+
+const Concurrency = 10;
+const Queue = new AsyncQueue<number>(Concurrency);
+const Item: IQueueItem<number> = {
+    Task: async () => 30;
+    Priority: 1;
+};
+
+Queue.Add(Item);
+
+console.log(Queue.isRunning); // false
+Queue.Start(); // start the queue
+console.log(Queue.isRunning); // true
+await Queue.Start(); // wait until complete
+console.log(Queue.isRunning); // false
+
+/**
+ *  Since the concurrency is 10, 
+ *  only 10 tasks will be processed 
+ *  and the rest will be idle.
+ */
+for(let i = 0; i < 100; i++) Queue.Add(Item);
+Queue.Start();
+Queue.Stop();
+
+console.log('Tasks Complete!');
+```
+
+
 ## Tests
 
 To run the test suite, first install the dependencies, then run `npm test`:
