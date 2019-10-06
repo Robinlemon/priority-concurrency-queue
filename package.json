@@ -1,6 +1,6 @@
 {
     "name": "@robinlemon/priority-concurrency-queue",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "description": "A fast promise queue with priority and concurrency options.",
     "author": "Lewis Gibson <lewis-gibson@hotmail.com>",
     "license": "MIT",
@@ -23,10 +23,6 @@
     },
     "typeCoverage": {
         "atLeast": 90
-    },
-    "dependencies": {
-        "npm-run-all": "^4.1.5",
-        "source-map-support": "^0.5.13"
     },
     "devDependencies": {
         "@codechecks/client": "^0.1.10",
