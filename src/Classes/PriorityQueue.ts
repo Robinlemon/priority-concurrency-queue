@@ -10,9 +10,9 @@ export class PriorityQueue<T = unknown> {
     public Insert(Task: IQueueItem<T>): void {
         let InsertionIndex = 0;
 
-        while (InsertionIndex < this.Length && this.List[InsertionIndex].Priority < Task.Priority) InsertionIndex++;
+        while (InsertionIndex < this.Length && Task.Priority <= this.List[InsertionIndex].Priority) InsertionIndex++;
 
-        this.List.splice(InsertionIndex + 1, 0, Task);
+        this.List.splice(InsertionIndex, 0, Task);
         this.Length++;
     }
 

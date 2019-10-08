@@ -44,7 +44,7 @@ describe('PriorityQueue', () => {
         const Extracted: unknown[] = [];
         while (Queue.Count() > 0) Extracted.push(Queue.Dequeue());
 
-        expect(JSON.stringify(Extracted)).toBe(JSON.stringify([Task1, Task2, Task3]));
+        expect(JSON.stringify(Extracted)).toBe(JSON.stringify([Task3, Task2, Task1]));
     });
 
     test('Dequeue Should Work in Priority Order', () => {
