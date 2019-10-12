@@ -1,6 +1,6 @@
 {
     "name": "@robinlemon/priority-concurrency-queue",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "description": "A fast promise queue with priority and concurrency options.",
     "author": "Lewis Gibson <lewis-gibson@hotmail.com>",
     "license": "MIT",
@@ -8,6 +8,25 @@
     "types": "build/index.d.ts",
     "files": [
         "build"
+    ],
+    "keywords": [
+        "promise",
+        "limit",
+        "limited",
+        "concurrency",
+        "throttle",
+        "throat",
+        "rate",
+        "batch",
+        "ratelimit",
+        "task",
+        "queue",
+        "async",
+        "await",
+        "promises",
+        "bluebird",
+        "priority",
+        "order"
     ],
     "private": false,
     "scripts": {
