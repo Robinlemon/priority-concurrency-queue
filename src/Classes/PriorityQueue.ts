@@ -8,11 +8,18 @@ export class PriorityQueue {
     private List: IQueueItem[] = [];
 
     public Insert(Task: IQueueItem): void {
-        let InsertionIndex = 0;
+        let Low = 0;
+        let High = this.List.length;
 
-        while (InsertionIndex < this.Length && Task.Priority <= this.List[InsertionIndex].Priority) InsertionIndex++;
+        while (Low < High) {
+            const Mid = (Low + High) >>> 1;
+            if (this.List[Mid].Priority > Task.Priority) Low = Mid + 1;
+            else High = Mid;
+        }
 
-        this.List.splice(InsertionIndex, 0, Task);
+        while (Low < this.Length && Task.Priority === this.List[Low].Priority) Low++;
+
+        this.List.splice(Low, 0, Task);
         this.Length++;
     }
 

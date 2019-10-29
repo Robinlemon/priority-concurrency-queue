@@ -28,13 +28,15 @@ $ npm install @robinlemon/priority-concurrency-queue
 
 ## Usage
 
+Sorted highest priority first, then by time added for those of the same priority.
+
 Short Example:
 
 ```ts
 import { AsyncQueue, IQueueItem } from '@robinlemon/priority-concurrency-queue';
 
-await(new AsyncQueue<number>(10).Add({
-    Task: async () => 30;
+await(new AsyncQueue(10).Add({
+    Task: async () => {};
     Priority: 1;
 }).Start());
 
@@ -47,9 +49,9 @@ Long Example:
 import { AsyncQueue, IQueueItem } from '@robinlemon/priority-concurrency-queue';
 
 const Concurrency = 10;
-const Queue = new AsyncQueue<number>(Concurrency);
-const Item: IQueueItem<number> = {
-    Task: async () => 30;
+const Queue = new AsyncQueue(Concurrency);
+const Item: IQueueItem = {
+    Task: async () => {};
     Priority: 1;
 };
 
@@ -62,8 +64,8 @@ await Queue.Start(); // wait until complete
 console.log(Queue.isRunning); // false
 
 /**
- *  Since the concurrency is 10, 
- *  only 10 tasks will be processed 
+ *  Since the concurrency is 10,
+ *  only 10 tasks will be processed
  *  and the rest will be idle.
  */
 for(let i = 0; i < 100; i++) Queue.Add(Item);
@@ -72,7 +74,6 @@ Queue.Stop();
 
 console.log('Tasks Complete!');
 ```
-
 
 ## Tests
 
