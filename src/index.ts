@@ -9,7 +9,9 @@ export class AsyncQueue {
     private Deferred!: Promise<void>;
     private Resolver!: () => void;
 
-    public constructor(private Concurrency: number = 1) {}
+    public constructor(private Concurrency: number = 1) {
+        if (this.Concurrency < 1) throw new Error('Concurrency must be >= 1');
+    }
 
     public Add(...Tasks: IQueueItem[]): this {
         const TasksLen = Tasks.length;
@@ -46,10 +48,12 @@ export class AsyncQueue {
     private Run() {
         while (this.Running && this.Inflight < this.Concurrency && this.Queue.Count() > 0) {
             const { Task } = this.Queue.Dequeue()!;
+
             ++this.Inflight;
 
             Task().finally(() => {
                 --this.Inflight;
+
                 if (this.Queue.Count() === 0 && this.Inflight === 0) {
                     this.Running = false;
                     this.Resolver();
