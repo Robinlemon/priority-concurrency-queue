@@ -22,18 +22,19 @@ describe('PriorityQueue', () => {
     });
 
     test('Insertion Should Add By Priority Index', () => {
-        const Queue = new PriorityQueue<number>();
-        const Task1: IQueueItem<number> = {
+        const Queue = new PriorityQueue();
+
+        const Task1: IQueueItem = {
             Priority: 1,
-            Task: async () => 1,
+            Task: async () => {},
         };
-        const Task2: IQueueItem<number> = {
+        const Task2: IQueueItem = {
             Priority: 1,
-            Task: async () => 1,
+            Task: async () => {},
         };
-        const Task3: IQueueItem<number> = {
+        const Task3: IQueueItem = {
             Priority: 2,
-            Task: async () => 1,
+            Task: async () => {},
         };
 
         Queue.Insert(Task1);
@@ -41,24 +42,24 @@ describe('PriorityQueue', () => {
         expect(Queue.Count()).toBe(2);
         Queue.Insert(Task2);
 
-        const Extracted: unknown[] = [];
-        while (Queue.Count() > 0) Extracted.push(Queue.Dequeue());
+        const Extracted: IQueueItem[] = [];
+        while (Queue.Count() > 0) Extracted.push(Queue.Dequeue()!);
 
         expect(JSON.stringify(Extracted)).toBe(JSON.stringify([Task3, Task2, Task1]));
     });
 
     test('Dequeue Should Work in Priority Order', () => {
-        const Queue = new PriorityQueue<number>();
+        const Queue = new PriorityQueue();
         const Iterations = 100;
 
         for (let i = 0; i < Iterations; i++)
             Queue.Insert({
                 Priority: i,
-                Task: async () => i,
+                Task: async () => {},
             });
 
         const LastT: number = Iterations + 1;
-        for (let i = 0; i < Iterations; i++) expect(Queue.Dequeue().Priority).toBeLessThan(LastT);
+        for (let i = 0; i < Iterations; i++) expect(Queue.Dequeue()!.Priority).toBeLessThan(LastT);
 
         expect(Queue.Count()).toBe(0);
     });

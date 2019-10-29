@@ -1,13 +1,13 @@
-export interface IQueueItem<T> {
-    Task: () => Promise<T>;
+export interface IQueueItem {
+    Task: () => Promise<void>;
     Priority: number;
 }
 
-export class PriorityQueue<T = unknown> {
+export class PriorityQueue {
     private Length = 0;
-    private List: IQueueItem<T>[] = [];
+    private List: IQueueItem[] = [];
 
-    public Insert(Task: IQueueItem<T>): void {
+    public Insert(Task: IQueueItem): void {
         let InsertionIndex = 0;
 
         while (InsertionIndex < this.Length && Task.Priority <= this.List[InsertionIndex].Priority) InsertionIndex++;
@@ -16,7 +16,7 @@ export class PriorityQueue<T = unknown> {
         this.Length++;
     }
 
-    public Dequeue(): IQueueItem<T> {
+    public Dequeue(): IQueueItem | undefined {
         return this.Length--, this.List.shift();
     }
 
