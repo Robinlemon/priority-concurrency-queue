@@ -12,7 +12,7 @@ describe('AsyncQueue', () => {
 
         expect(Queue.isRunning).toBeFalsy();
 
-        Queue.Add(...Array.from({ length: Iter }, () => ({ Priority: 1, Task: async () => Mock() })));
+        Queue.Add(Array.from({ length: Iter }, () => ({ Priority: 1, Task: async () => Mock() })));
 
         Queue.Start();
         expect(Queue.isRunning).toBeTruthy();
@@ -27,7 +27,7 @@ describe('AsyncQueue', () => {
         const Mock = jest.fn();
         const Iter = 30;
 
-        Queue.Add(...Array.from({ length: Iter }, () => ({ Priority: 1, Task: async () => Mock() })));
+        Queue.Add(Array.from({ length: Iter }, () => ({ Priority: 1, Task: async () => Mock() })));
         expect(Queue.isRunning).toBeFalsy();
 
         Queue.Start();
@@ -53,7 +53,7 @@ describe('AsyncQueue', () => {
         const Time = process.hrtime();
 
         Queue.Add(
-            ...Array.from({ length: Iter }, () => ({
+            Array.from({ length: Iter }, () => ({
                 Priority: 1,
                 Task: async () => {
                     await Sleep(TimeoutDuration);

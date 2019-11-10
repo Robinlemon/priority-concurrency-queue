@@ -1,5 +1,5 @@
 export interface IQueueItem {
-    Task: () => Promise<void>;
+    Task: () => void | Promise<void>;
     Priority: number;
 }
 

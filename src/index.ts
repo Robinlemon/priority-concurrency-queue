@@ -13,7 +13,9 @@ export class AsyncQueue {
         if (this.Concurrency < 1) throw new Error('Concurrency must be >= 1');
     }
 
-    public Add(...Tasks: IQueueItem[]): this {
+    public Add(Tasks: IQueueItem | IQueueItem[]): this {
+        if (!Array.isArray(Tasks)) Tasks = [Tasks];
+
         const TasksLen = Tasks.length;
 
         for (let i = 0; i < TasksLen; i++) {
@@ -51,7 +53,7 @@ export class AsyncQueue {
 
             ++this.Inflight;
 
-            Task().finally(() => {
+            (async () => await Task())().finally(() => {
                 --this.Inflight;
 
                 if (this.Queue.Count() === 0 && this.Inflight === 0) {
