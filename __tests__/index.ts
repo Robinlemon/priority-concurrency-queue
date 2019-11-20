@@ -5,6 +5,10 @@ describe('AsyncQueue', () => {
         expect(() => new AsyncQueue()).not.toThrow();
     });
 
+    test.each([0, -1, -Infinity])('Should Fail on %s Concurrency', Concurrency => {
+        expect(() => new AsyncQueue(Concurrency)).toThrow();
+    });
+
     test('Should Execute Queue', async () => {
         const Queue = new AsyncQueue();
         const Mock = jest.fn();
