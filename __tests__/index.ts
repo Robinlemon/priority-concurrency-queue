@@ -69,4 +69,49 @@ describe('AsyncQueue', () => {
         expect(Mock.mock.calls.length).toBe(Iter);
         expect(Diff[0] * 1e3 + Diff[1] / 1e6).toBeLessThan(Iter * TimeoutDuration);
     });
+
+    test('Should Clear Task Queue', async () => {
+        const Queue = new AsyncQueue(1);
+
+        for (let i = 0; i < 100; i++)
+            Queue.Add({
+                Priority: i % 10,
+                Task: async () => {},
+            });
+        expect(Queue.Tasks).toBe(100);
+        Queue.Clear();
+        expect(Queue.Tasks).toBe(0);
+    });
+
+    test('Should Clear Task Queue At Priority', async () => {
+        const Queue = new AsyncQueue(1);
+
+        for (let i = 0; i < 100; i++)
+            Queue.Add({
+                Priority: i % 10,
+                Task: async () => {},
+            });
+        expect(Queue.Tasks).toBe(100);
+        Queue.ClearPriority(0);
+        expect(Queue.Tasks).toBe(90);
+    });
+
+    test('Should Wait for Inflight when Clear(true)', async () => {
+        const Concurrecy = 10;
+        const Queue = new AsyncQueue(Concurrecy);
+        let Called = 0;
+
+        for (let i = 0; i < 100; i++)
+            Queue.Add({
+                Priority: i % 10,
+                Task: async () => {
+                    ++Called;
+                },
+            });
+        expect(Queue.Tasks).toBe(100);
+        Queue.Start();
+        await Queue.Clear(true);
+        expect(Called).toBe(Concurrecy);
+        expect(Queue.Tasks).toBe(0);
+    });
 });
