@@ -19,61 +19,40 @@ module.exports = {
         'prettier',
         'plugin:prettier/recommended',
     ],
-    plugins: ['@typescript-eslint', 'simple-import-sort', 'json', 'markdown', 'optimize-regex', 'sort-keys-fix'],
+    plugins: ['@typescript-eslint', 'simple-import-sort', 'json', 'markdown', 'optimize-regex', 'sort-keys-fix', 'prettier'],
     rules: {
-        /**
-         * Object Formatting
-         */
+        /* Object Formatting */
         'object-shorthand': ['error', 'always', { avoidQuotes: true }],
         'sort-keys': ['error', 'asc', { caseSensitive: true, natural: false, minKeys: 2 }],
-        'sort-keys-fix/sort-keys-fix': 2,
+        'sort-keys-fix/sort-keys-fix': 'error',
 
-        /**
-         * JSON
-         */
+        /* JSON */
         'json/*': 'error',
 
-        /**
-         * Regular Expressions
-         */
+        /* Regular Expressions */
         'optimize-regex/optimize-regex': 'error',
-
-        /**
-         * TypeScript
-         */
-        '@typescript-eslint/indent': 'off',
-        '@typescript-eslint/explicit-function-return-type': 'off',
-        '@typescript-eslint/interface-name-prefix': 'off',
-        '@typescript-eslint/no-parameter-properties': 'off',
-        '@typescript-eslint/camelcase': 'off',
-        '@typescript-eslint/no-var-requires': 'off',
-        '@typescript-eslint/class-name-casing': 'warn',
-        '@typescript-eslint/no-namespace': 'off',
-        '@typescript-eslint/member-ordering': 'error',
-        '@typescript-eslint/prefer-interface': 'off',
-        '@typescript-eslint/no-non-null-assertion': 'off',
 
         /* Sorting */
         'simple-import-sort/sort': 'error',
+
+        /* JS Formatting Options */
+        'no-shadow': 'error',
     },
-    globals: { Atomics: 'readonly', SharedArrayBuffer: 'readonly' },
+    globals: { Atomics: 'readonly', SharedArrayBuffer: 'readonly', Proxy: 'readonly' },
     overrides: [
         {
-            files: ['**/*.ts'],
+            files: ['*.ts'],
             parser: '@typescript-eslint/parser',
             parserOptions: {
                 //project: './tsconfig.json',
                 sourceType: 'module',
             },
-            plugins: ['@typescript-eslint', 'simple-import-sort'],
+            plugins: ['@typescript-eslint'],
             extends: [
                 /* TypeScript ESLint */
                 'plugin:@typescript-eslint/recommended',
                 'plugin:@typescript-eslint/eslint-recommended',
                 //'plugin:@typescript-eslint/recommended-requiring-type-checking',
-
-                /* Prettier Integration */
-                'prettier/@typescript-eslint',
 
                 /* Import */
                 'plugin:import/errors',
@@ -81,23 +60,11 @@ module.exports = {
                 'plugin:import/typescript',
             ],
             rules: {
-                /**
-                 * TypeScript Linting
-                 */
-                '@typescript-eslint/indent': 'off',
-                '@typescript-eslint/explicit-function-return-type': 'off',
-                '@typescript-eslint/interface-name-prefix': 'off',
-                '@typescript-eslint/no-parameter-properties': 'off',
-                '@typescript-eslint/camelcase': 'off',
-                '@typescript-eslint/no-var-requires': 'off',
-                '@typescript-eslint/class-name-casing': 'warn',
-                '@typescript-eslint/no-namespace': 'off',
+                /* TypeScript Linting */
                 '@typescript-eslint/member-ordering': 'error',
-                '@typescript-eslint/prefer-interface': 'off',
+                '@typescript-eslint/interface-name-prefix': 'off',
                 '@typescript-eslint/no-non-null-assertion': 'off',
-
-                /* Sorting */
-                'simple-import-sort/sort': 'error',
+                '@typescript-eslint/camelcase': 'off',
             },
             overrides: [
                 {

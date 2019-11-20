@@ -38,7 +38,7 @@
         "coverage": "jest --coverage --maxWorkers=2 && codecov",
         "lint": "eslint . --ext .js,.ts,.json,.md",
         "lint:fix": "eslint . --ext .js,.ts,.json,.md --fix",
-        "prepublishOnly": "npm run clean && npm run build && npm run lint && npm test"
+        "prepublishOnly": "yarn lint:fix && yarn test && yarn clean && yarn build"
     },
     "typeCoverage": {
         "atLeast": 90
@@ -48,30 +48,29 @@
     },
     "devDependencies": {
         "@codechecks/client": "^0.1.10",
-        "@types/jest": "^24.0.18",
-        "@types/node": "^12.7.11",
-        "@typescript-eslint/eslint-plugin": "^2.3.2",
-        "@typescript-eslint/parser": "^2.3.2",
+        "@types/jest": "^24.0.23",
+        "@types/node": "^12.12.11",
+        "@typescript-eslint/eslint-plugin": "^2.8.0",
+        "@typescript-eslint/parser": "^2.8.0",
         "codecov": "^3.6.1",
-        "eslint": "^6.5.1",
-        "eslint-config-prettier": "^6.4.0",
+        "eslint": "^6.6.0",
+        "eslint-config-prettier": "^6.7.0",
         "eslint-import-resolver-typescript": "^2.0.0",
         "eslint-plugin-import": "^2.18.2",
-        "eslint-plugin-jest": "^22.20.0",
+        "eslint-plugin-jest": "^23.0.4",
         "eslint-plugin-json": "^2.0.1",
         "eslint-plugin-markdown": "^1.0.1",
         "eslint-plugin-optimize-regex": "^1.1.7",
         "eslint-plugin-prettier": "^3.1.1",
-        "eslint-plugin-promise": "^4.2.1",
         "eslint-plugin-simple-import-sort": "^4.0.0",
-        "eslint-plugin-sort-keys-fix": "^1.0.1",
-        "husky": "^3.0.8",
+        "eslint-plugin-sort-keys-fix": "^1.1.0",
+        "husky": "^3.1.0",
         "jest": "^24.9.0",
-        "prettier": "^1.18.2",
+        "prettier": "^1.19.1",
         "rimraf": "^3.0.0",
         "ts-jest": "^24.1.0",
         "typecov": "^0.2.1",
-        "typescript": "^3.7.0-beta"
+        "typescript": "^3.7.2"
     },
     "repository": {
         "type": "git",
