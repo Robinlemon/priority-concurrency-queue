@@ -31,5 +31,6 @@ export class PriorityQueue {
 
     public RemoveAt(Priority: number): void {
         this.List = this.List.filter(Item => Item.Priority !== Priority);
+        this.Length = this.List.length;
     }
 }
