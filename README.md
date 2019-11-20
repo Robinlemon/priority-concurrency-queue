@@ -56,11 +56,12 @@ const Item: IQueueItem = {
 };
 
 Queue.Add(Item);
-
+console.log(Queue.Tasks); // 1
 console.log(Queue.isRunning); // false
 Queue.Start(); // start the queue
 console.log(Queue.isRunning); // true
 await Queue.Start(); // wait until complete
+console.log(Queue.Tasks); // 0
 console.log(Queue.isRunning); // false
 
 /**
@@ -73,6 +74,17 @@ Queue.Start();
 Queue.Stop();
 
 console.log('Tasks Complete!');
+
+Queue.Clear(true); // Wait for tasks to finish
+
+// The above is the same as:
+Queue.Clear()
+await Queue.Start();
+
+Queue.Add(Item);
+console.log(Queue.Tasks); // 1
+Queue.ClearPriority(1);
+console.log(Queue.Tasks); // 0
 ```
 
 ## Tests
