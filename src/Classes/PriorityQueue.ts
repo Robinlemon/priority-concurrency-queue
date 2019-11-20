@@ -28,4 +28,8 @@ export class PriorityQueue {
     }
 
     public Count = (): number => this.Length;
+
+    public RemoveAt(Priority: number): void {
+        this.List = this.List.filter(Item => Item.Priority !== Priority);
+    }
 }

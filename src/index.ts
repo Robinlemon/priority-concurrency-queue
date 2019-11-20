@@ -6,6 +6,8 @@ export class AsyncQueue {
     private Queue = new PriorityQueue();
     private Running = false;
 
+    private RunningTasks: Promise<void>[] = [];
+
     private Deferred!: Promise<void>;
     private Resolver!: () => void;
 
@@ -29,9 +31,30 @@ export class AsyncQueue {
         return this;
     }
 
+    public Stop(): void {
+        this.Running = false;
+    }
+
+    public async Clear(WaitForInflight = false): Promise<void> {
+        while (this.Queue.Count() > 0) this.Queue.Dequeue();
+        if (WaitForInflight) await this.Start();
+    }
+
+    public ClearPriority(Priority: number): void {
+        this.Queue.RemoveAt(Priority);
+    }
+
+    public get isRunning(): boolean {
+        return this.Running;
+    }
+
+    public get Tasks(): number {
+        return this.Queue.Count();
+    }
+
     public async Start(): Promise<void> {
         if (!this.Running) {
-            this.Deferred = new Promise(Resolve => (this.Resolver = Resolve));
+            this.Deferred = new Promise((Resolve): typeof Resolve => (this.Resolver = Resolve));
             this.Running = true;
             this.Run();
         }
@@ -39,28 +62,21 @@ export class AsyncQueue {
         return this.Deferred;
     }
 
-    public Stop(): void {
-        this.Running = false;
-    }
-
-    public get isRunning(): boolean {
-        return this.Running;
-    }
-
-    private Run() {
+    private Run(): void {
         while (this.Running && this.Inflight < this.Concurrency && this.Queue.Count() > 0) {
             const { Task } = this.Queue.Dequeue()!;
 
-            ++this.Inflight;
+            this.Inflight++;
+            this.RunningTasks.push(
+                (async (): Promise<void> => await Task())().finally(() => {
+                    --this.Inflight;
 
-            (async () => await Task())().finally(() => {
-                --this.Inflight;
-
-                if (this.Queue.Count() === 0 && this.Inflight === 0) {
-                    this.Running = false;
-                    this.Resolver();
-                } else this.Run();
-            });
+                    if (this.Queue.Count() === 0 && this.Inflight === 0) {
+                        this.Running = false;
+                        this.Resolver();
+                    } else this.Run();
+                }),
+            );
         }
     }
 }
