@@ -12,7 +12,7 @@ describe('AsyncQueue', () => {
 
         expect(Queue.isRunning).toBeFalsy();
 
-        Queue.Add(Array.from({ length: Iter }, () => ({ Priority: 1, Task: async () => Mock() })));
+        Queue.Add(Array.from({ length: Iter }, () => ({ Priority: 1, Task: async (): Promise<void> => Mock() })));
 
         Queue.Start();
         expect(Queue.isRunning).toBeTruthy();
@@ -27,7 +27,7 @@ describe('AsyncQueue', () => {
         const Mock = jest.fn();
         const Iter = 30;
 
-        Queue.Add(Array.from({ length: Iter }, () => ({ Priority: 1, Task: async () => Mock() })));
+        Queue.Add(Array.from({ length: Iter }, () => ({ Priority: 1, Task: async (): Promise<void> => Mock() })));
         expect(Queue.isRunning).toBeFalsy();
 
         Queue.Start();
@@ -47,7 +47,7 @@ describe('AsyncQueue', () => {
         const TimeoutDuration = 10;
 
         const Queue = new AsyncQueue(Iter);
-        const Sleep = (ms: number) => new Promise(Resolve => setTimeout(Resolve, ms));
+        const Sleep = (ms: number): Promise<void> => new Promise((Resolve): NodeJS.Timeout => setTimeout(Resolve, ms));
         const Mock = jest.fn();
 
         const Time = process.hrtime();
@@ -55,7 +55,7 @@ describe('AsyncQueue', () => {
         Queue.Add(
             Array.from({ length: Iter }, () => ({
                 Priority: 1,
-                Task: async () => {
+                Task: async (): Promise<void> => {
                     await Sleep(TimeoutDuration);
                     Mock();
                 },
