@@ -5,7 +5,7 @@ describe('AsyncQueue', () => {
         expect(() => new AsyncQueue()).not.toThrow();
     });
 
-    test.each([0, -1, -Infinity])('Should Fail on %s Concurrency', Concurrency => {
+    test.each([0, -1, -Infinity, 'test', NaN, Infinity] as number[])('Should Fail on %s Concurrency', Concurrency => {
         expect(() => new AsyncQueue(Concurrency)).toThrow();
     });
 

@@ -12,15 +12,15 @@ export class AsyncQueue {
     private Resolver!: () => void;
 
     public constructor(private Concurrency: number = 1) {
+        if (isNaN(this.Concurrency)) throw new Error('Concurrency must be a number');
         if (this.Concurrency < 1) throw new Error('Concurrency must be >= 1');
+        if (this.Concurrency > Number.MAX_SAFE_INTEGER) throw new Error('Concurrency must be >= 1');
     }
 
     public Add(Tasks: IQueueItem | IQueueItem[]): this {
         if (!Array.isArray(Tasks)) Tasks = [Tasks];
 
-        const TasksLen = Tasks.length;
-
-        for (let i = 0; i < TasksLen; i++) {
+        for (let i = 0; i < Tasks.length; i++) {
             const Task = Tasks[i];
             const Sign = Math.sign(Task.Priority);
 
