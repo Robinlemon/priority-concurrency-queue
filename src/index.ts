@@ -27,6 +27,8 @@ export class AsyncQueue {
         if (isNaN(this.Options.Concurrency)) throw new Error('Concurrency must be a number');
         if (this.Options.Concurrency < 1) throw new Error('Concurrency must be >= 1');
         if (this.Options.Concurrency > Number.MAX_SAFE_INTEGER) throw new Error('Concurrency must be < Number.MAX_SAFE_INTEGER');
+
+        if (typeof this.Options.AutoStart !== 'boolean') throw new Error('AutoStart must be a boolean');
     }
 
     public Add(Tasks: IQueueItem | IQueueItem[]): this {

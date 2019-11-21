@@ -1,6 +1,6 @@
 {
     "name": "@robinlemon/priority-concurrency-queue",
-    "version": "1.4.5",
+    "version": "2.0.0",
     "description": "A fast promise queue with priority and concurrency options.",
     "author": "Lewis Gibson <lewis-gibson@hotmail.com>",
     "license": "MIT",

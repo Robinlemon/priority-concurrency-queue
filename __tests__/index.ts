@@ -1,12 +1,24 @@
 import { AsyncQueue } from '../src';
 
+/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+type CtorArgs = (typeof AsyncQueue extends new (...args: infer U) => any ? U : never)[0];
+
 describe('AsyncQueue', () => {
-    test('Should Construct Normally', () => {
-        expect(() => new AsyncQueue()).not.toThrow();
+    describe('Should Construct Normally', () => {
+        test.each([undefined, {}, { Concurrency: 10 }, { AutoStart: true }, { AutoStart: true, Concurrency: 10 }] as (Partial<CtorArgs> | undefined)[])(
+            '%o',
+            Options => {
+                expect(() => new AsyncQueue((Options as unknown) as CtorArgs)).not.toThrow();
+            },
+        );
     });
 
     test.each([0, -1, -Infinity, 'test', NaN, Infinity] as number[])('Should Fail on %s Concurrency', Concurrency => {
         expect(() => new AsyncQueue({ Concurrency })).toThrow();
+    });
+
+    test.each(([0, -1, -Infinity, 'test', NaN, Infinity] as unknown) as boolean[])('Should Fail on %s AutoStart', AutoStart => {
+        expect(() => new AsyncQueue({ AutoStart, Concurrency: 10 })).toThrow();
     });
 
     test('Should Execute Queue', async () => {
@@ -17,8 +29,8 @@ describe('AsyncQueue', () => {
         expect(Queue.isRunning).toBeFalsy();
 
         Queue.Add(Array.from({ length: Iter }, () => ({ Priority: 1, Task: async (): Promise<void> => Mock() })));
-
         Queue.Start();
+
         expect(Queue.isRunning).toBeTruthy();
         await Queue.Start();
         expect(Queue.isRunning).toBeFalsy();
@@ -115,6 +127,25 @@ describe('AsyncQueue', () => {
         expect(Queue.Tasks).toBe(100);
         Queue.Start();
         await Queue.Clear(true);
+        expect(Called).toBe(Concurrency);
+        expect(Queue.Tasks).toBe(0);
+    });
+
+    test('AutoStart should auto handle new tasks', async () => {
+        const Concurrency = 10;
+        const Queue = new AsyncQueue({ AutoStart: true, Concurrency });
+        let Called = 0;
+
+        for (let i = 0; i < Concurrency; i++)
+            Queue.Add({
+                Priority: 1,
+                Task: async () => {
+                    ++Called;
+                },
+            });
+
+        expect(Queue.isRunning).toBeTruthy();
+        await Queue.Start();
         expect(Called).toBe(Concurrency);
         expect(Queue.Tasks).toBe(0);
     });
