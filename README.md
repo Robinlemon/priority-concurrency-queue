@@ -35,12 +35,28 @@ Short Example:
 ```ts
 import { AsyncQueue, IQueueItem } from '@robinlemon/priority-concurrency-queue';
 
-await(new AsyncQueue(10).Add({
+await (new AsyncQueue({
+    Concurrency: 10
+}).Add({
     Task: async () => {};
     Priority: 1;
 }).Start());
 
 console.log('Tasks Complete!');
+```
+
+Using AutoStart:
+
+```ts
+import { AsyncQueue, IQueueItem } from '@robinlemon/priority-concurrency-queue';
+
+new AsyncQueue({
+    Concurrency: 10,
+    AutoStart: true,
+}).Add({
+    Task: async () => {};
+    Priority: 1;
+});
 ```
 
 Long Example:
@@ -49,7 +65,7 @@ Long Example:
 import { AsyncQueue, IQueueItem } from '@robinlemon/priority-concurrency-queue';
 
 const Concurrency = 10;
-const Queue = new AsyncQueue(Concurrency);
+const Queue = new AsyncQueue({ Concurrency });
 const Item: IQueueItem = {
     Task: async () => {};
     Priority: 1;
