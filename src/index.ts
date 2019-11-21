@@ -1,20 +1,32 @@
 import { IQueueItem, PriorityQueue } from './Classes/PriorityQueue';
 export { IQueueItem };
 
+interface ICtorOptions {
+    Concurrency: number;
+    AutoStart?: boolean;
+}
+
 export class AsyncQueue {
+    private Options: ICtorOptions;
+
     private Inflight = 0;
     private Queue = new PriorityQueue();
     private Running = false;
-
     private RunningTasks: Promise<void>[] = [];
 
     private Deferred!: Promise<void>;
     private Resolver!: () => void;
 
-    public constructor(private Concurrency: number = 1) {
-        if (isNaN(this.Concurrency)) throw new Error('Concurrency must be a number');
-        if (this.Concurrency < 1) throw new Error('Concurrency must be >= 1');
-        if (this.Concurrency > Number.MAX_SAFE_INTEGER) throw new Error('Concurrency must be >= 1');
+    public constructor(Options?: ICtorOptions) {
+        this.Options = {
+            AutoStart: false,
+            Concurrency: 1,
+            ...Options,
+        };
+
+        if (isNaN(this.Options.Concurrency)) throw new Error('Concurrency must be a number');
+        if (this.Options.Concurrency < 1) throw new Error('Concurrency must be >= 1');
+        if (this.Options.Concurrency > Number.MAX_SAFE_INTEGER) throw new Error('Concurrency must be < Number.MAX_SAFE_INTEGER');
     }
 
     public Add(Tasks: IQueueItem | IQueueItem[]): this {
@@ -24,9 +36,11 @@ export class AsyncQueue {
             const Task = Tasks[i];
             const Sign = Math.sign(Task.Priority);
 
-            if (isNaN(Sign) || Math.sign(Sign) < 0) throw new Error('Invalid Argument Priority: Must be 0 or above!');
+            if (isNaN(Sign) || Math.sign(Sign) < 0) throw new Error('Priority must be >= 0');
             else this.Queue.Insert(Task);
         }
+
+        if (this.Options.AutoStart && !this.Running) this.Start();
 
         return this;
     }
@@ -63,7 +77,7 @@ export class AsyncQueue {
     }
 
     private Run(): void {
-        while (this.Running && this.Inflight < this.Concurrency && this.Queue.Count() > 0) {
+        while (this.Running && this.Inflight < this.Options.Concurrency && this.Queue.Count() > 0) {
             const { Task } = this.Queue.Dequeue()!;
 
             this.Inflight++;

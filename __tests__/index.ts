@@ -6,7 +6,7 @@ describe('AsyncQueue', () => {
     });
 
     test.each([0, -1, -Infinity, 'test', NaN, Infinity] as number[])('Should Fail on %s Concurrency', Concurrency => {
-        expect(() => new AsyncQueue(Concurrency)).toThrow();
+        expect(() => new AsyncQueue({ Concurrency })).toThrow();
     });
 
     test('Should Execute Queue', async () => {
@@ -50,7 +50,7 @@ describe('AsyncQueue', () => {
         const Iter = 100;
         const TimeoutDuration = 10;
 
-        const Queue = new AsyncQueue(Iter);
+        const Queue = new AsyncQueue({ Concurrency: Iter });
         const Sleep = (ms: number): Promise<void> => new Promise((Resolve): NodeJS.Timeout => setTimeout(Resolve, ms));
         const Mock = jest.fn();
 
@@ -75,7 +75,7 @@ describe('AsyncQueue', () => {
     });
 
     test('Should Clear Task Queue', async () => {
-        const Queue = new AsyncQueue(1);
+        const Queue = new AsyncQueue({ Concurrency: 1 });
 
         for (let i = 0; i < 100; i++)
             Queue.Add({
@@ -88,7 +88,7 @@ describe('AsyncQueue', () => {
     });
 
     test('Should Clear Task Queue At Priority', async () => {
-        const Queue = new AsyncQueue(1);
+        const Queue = new AsyncQueue({ Concurrency: 1 });
 
         for (let i = 0; i < 100; i++)
             Queue.Add({
@@ -101,8 +101,8 @@ describe('AsyncQueue', () => {
     });
 
     test('Should Wait for Inflight when Clear(true)', async () => {
-        const Concurrecy = 10;
-        const Queue = new AsyncQueue(Concurrecy);
+        const Concurrency = 10;
+        const Queue = new AsyncQueue({ Concurrency });
         let Called = 0;
 
         for (let i = 0; i < 100; i++)
@@ -115,7 +115,7 @@ describe('AsyncQueue', () => {
         expect(Queue.Tasks).toBe(100);
         Queue.Start();
         await Queue.Clear(true);
-        expect(Called).toBe(Concurrecy);
+        expect(Called).toBe(Concurrency);
         expect(Queue.Tasks).toBe(0);
     });
 });
