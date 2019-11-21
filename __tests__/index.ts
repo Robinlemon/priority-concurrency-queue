@@ -4,21 +4,27 @@ import { AsyncQueue } from '../src';
 type CtorArgs = (typeof AsyncQueue extends new (...args: infer U) => any ? U : never)[0];
 
 describe('AsyncQueue', () => {
-    describe('Should Construct Normally', () => {
-        test.each([undefined, {}, { Concurrency: 10 }, { AutoStart: true }, { AutoStart: true, Concurrency: 10 }] as (Partial<CtorArgs> | undefined)[])(
-            '%o',
-            Options => {
-                expect(() => new AsyncQueue((Options as unknown) as CtorArgs)).not.toThrow();
-            },
-        );
-    });
+    describe('Construction', () => {
+        describe('Expected Arguments', () => {
+            test.each([undefined, {}, { Concurrency: 10 }, { AutoStart: true }, { AutoStart: true, Concurrency: 10 }] as (Partial<CtorArgs> | undefined)[])(
+                '%o',
+                Options => {
+                    expect(() => new AsyncQueue((Options as unknown) as CtorArgs)).not.toThrow();
+                },
+            );
+        });
 
-    test.each([0, -1, -Infinity, 'test', NaN, Infinity] as number[])('Should Fail on %s Concurrency', Concurrency => {
-        expect(() => new AsyncQueue({ Concurrency })).toThrow();
-    });
+        describe('Concurrency', () => {
+            test.each([0, -1, -Infinity, 'test', NaN, Infinity] as number[])('%s', Concurrency => {
+                expect(() => new AsyncQueue({ Concurrency })).toThrow();
+            });
+        });
 
-    test.each(([0, -1, -Infinity, 'test', NaN, Infinity] as unknown) as boolean[])('Should Fail on %s AutoStart', AutoStart => {
-        expect(() => new AsyncQueue({ AutoStart, Concurrency: 10 })).toThrow();
+        describe('AutoStart', () => {
+            test.each(([0, -1, -Infinity, 'test', NaN, Infinity] as unknown) as boolean[])('%s', AutoStart => {
+                expect(() => new AsyncQueue({ AutoStart, Concurrency: 10 })).toThrow();
+            });
+        });
     });
 
     test('Should Execute Queue', async () => {
@@ -54,11 +60,15 @@ describe('AsyncQueue', () => {
         expect(Mock.mock.calls.length).toBeLessThan(Iter);
     });
 
-    test.each([NaN, 'test', -1, -Infinity])('Should Throw on Bad Priority: %s', async Arg => {
-        expect(() => new AsyncQueue().Add({ Priority: (Arg as unknown) as number, Task: async () => undefined })).toThrow();
+    describe('#Add', () => {
+        describe('Should throw on bad priority', () => {
+            test.each([NaN, 'test', -1, -Infinity])('%s', async Arg => {
+                expect(() => new AsyncQueue().Add({ Priority: (Arg as unknown) as number, Task: async () => undefined })).toThrow();
+            });
+        });
     });
 
-    test('Should Work Concurrently', async () => {
+    test('Should work concurrently', async () => {
         const Iter = 100;
         const TimeoutDuration = 10;
 
@@ -86,7 +96,7 @@ describe('AsyncQueue', () => {
         expect(Diff[0] * 1e3 + Diff[1] / 1e6).toBeLessThan(Iter * TimeoutDuration);
     });
 
-    test('Should Clear Task Queue', async () => {
+    test('Should clear task queue', async () => {
         const Queue = new AsyncQueue({ Concurrency: 1 });
 
         for (let i = 0; i < 100; i++)
@@ -94,41 +104,69 @@ describe('AsyncQueue', () => {
                 Priority: i % 10,
                 Task: async () => {},
             });
+
         expect(Queue.Tasks).toBe(100);
         Queue.Clear();
         expect(Queue.Tasks).toBe(0);
     });
 
-    test('Should Clear Task Queue At Priority', async () => {
-        const Queue = new AsyncQueue({ Concurrency: 1 });
+    describe('#ClearPriority', () => {
+        test('Should clear the queue', async () => {
+            const Queue = new AsyncQueue({ Concurrency: 1 });
 
-        for (let i = 0; i < 100; i++)
-            Queue.Add({
-                Priority: i % 10,
-                Task: async () => {},
-            });
-        expect(Queue.Tasks).toBe(100);
-        Queue.ClearPriority(0);
-        expect(Queue.Tasks).toBe(90);
+            for (let i = 0; i < 100; i++)
+                Queue.Add({
+                    Priority: i % 10,
+                    Task: async () => {},
+                });
+
+            expect(Queue.Tasks).toBe(100);
+            Queue.ClearPriority(0);
+            expect(Queue.Tasks).toBe(90);
+        });
     });
 
-    test('Should Wait for Inflight when Clear(true)', async () => {
-        const Concurrency = 10;
-        const Queue = new AsyncQueue({ Concurrency });
-        let Called = 0;
+    describe('#Clear', () => {
+        test('Should not wait for inflight tasks', async () => {
+            const Concurrency = 10;
+            const Tasks = 100;
+            const Queue = new AsyncQueue({ Concurrency });
+            let Called = 0;
 
-        for (let i = 0; i < 100; i++)
-            Queue.Add({
-                Priority: i % 10,
-                Task: async () => {
-                    ++Called;
-                },
-            });
-        expect(Queue.Tasks).toBe(100);
-        Queue.Start();
-        await Queue.Clear(true);
-        expect(Called).toBe(Concurrency);
-        expect(Queue.Tasks).toBe(0);
+            for (let i = 0; i < Tasks; i++)
+                Queue.Add({
+                    Priority: i % 10,
+                    Task: async () => {
+                        await new Promise(r => setTimeout(r, 10000));
+                        ++Called;
+                    },
+                });
+
+            expect(Queue.Tasks).toBe(Tasks);
+            Queue.Start();
+            Queue.Clear();
+            expect(Called).toBeLessThan(Concurrency);
+            expect(Queue.Tasks).toBe(0);
+        });
+
+        test('Should wait for inflight tasks', async () => {
+            const Concurrency = 10;
+            const Queue = new AsyncQueue({ Concurrency });
+            let Called = 0;
+
+            for (let i = 0; i < 100; i++)
+                Queue.Add({
+                    Priority: i % 10,
+                    Task: async () => {
+                        ++Called;
+                    },
+                });
+            expect(Queue.Tasks).toBe(100);
+            Queue.Start();
+            await Queue.Clear(true);
+            expect(Called).toBe(Concurrency);
+            expect(Queue.Tasks).toBe(0);
+        });
     });
 
     test('AutoStart should auto handle new tasks', async () => {
